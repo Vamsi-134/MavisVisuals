@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Portfolio Admin</title>
@@ -17,65 +16,303 @@
 
 <div class="container">
 
-<h1>Portfolio CMS</h1>
+    <h1>Portfolio CMS</h1>
 
-<div class="card">
+    <div class="card">
 
-<h2>Upload New Media</h2>
+        <h2>Upload New Media</h2>
 
-<form action="/upload"
-      method="post"
-      enctype="multipart/form-data">
+        <form action="/upload"
+              method="post"
+              enctype="multipart/form-data">
 
-<label>Photo / Video Name</label>
+            <label>Photo / Video Name</label>
+            <input type="text" name="title" required>
 
-<input type="text" name="title">
+            <label>Description</label>
+            <textarea rows="4" name="description"></textarea>
 
-<label>Description</label>
+            <label>Media Type</label>
 
-<textarea rows="4" name="description"></textarea>
+            <select name="type">
+                <option>Image</option>
+                <option>Video</option>
+            </select>
 
-<label>Category</label>
-<label>Media Type</label>
+            <label>Category</label>
 
-<select name="type">
+<select name="category" required>
 
-<option>Image</option>
+    <option value="">Select Category</option>
 
-<option>Video</option>
-
-</select>
-
-<select name="category">
-
-<option>Edited Images</option>
-
-<option>Edited Videos</option>
-
-<option>Color Grading</option>
-
-<option>Thumbnails</option>
+    <option
+        th:each="category : ${categoryList}"
+        th:value="${category.name}"
+        th:text="${category.name}">
+    </option>
 
 </select>
 
-<label>Choose File</label>
-<input type="file" name="file">
-<label class="checkbox-label">
-    <input type="checkbox" name="coverImage">
-    Set as Cover Image
-</label>
-<button type="submit">
+            <label>Choose File</label>
 
-Upload
+            <div class="drop-zone" id="dropZone">
 
-</button>
+    <p>📂 Drag & Drop Files Here</p>
 
-</form>
+    <p>or</p>
+
+    <label class="browse-btn">
+
+        Browse Files
+
+        <input type="file"
+               id="fileInput"
+               name="files"
+               multiple
+               hidden>
+
+    </label>
+
+    <div id="previewContainer"></div>
 
 </div>
 
-</div>
+            <label class="checkbox-label">
+                <input type="checkbox" name="coverImage">
+                Set as Cover Image
+            </label>
 
+            <button type="submit">
+                Upload
+            </button>
+
+        </form>
+
+    </div>
+    <div class="card">
+
+    <h2>Manage Categories</h2>
+
+    <form action="/add-category" method="post">
+
+        <label>Category Name</label>
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Wedding"
+            required>
+
+        <button type="submit">
+            Add Category
+        </button>
+
+    </form>
+
+    <br>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr th:each="category : ${categoryList}">
+
+                <td th:text="${category.name}"></td>
+
+                <td>
+
+<a th:href="@{'/edit-category/' + ${category.id}}"
+class="edit-btn">
+
+Edit
+
+</a>
+
+&nbsp;
+
+<a th:href="@{'/delete-category/' + ${category.id}}"
+class="delete-btn">
+
+Delete
+
+</a>
+
+</td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+<div class="search-box">
+
+    <input
+        type="text"
+        id="searchMedia"
+        placeholder="Search media...">
+
+</div>
+    <div class="card">
+
+        <h2>Uploaded Media</h2>
+
+        <table id="mediaTable">
+
+            <thead>
+
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr th:each="media : ${mediaList}">
+
+                    <td th:text="${media.title}"></td>
+
+                    <td th:text="${media.category}"></td>
+
+                    <td th:text="${media.type}"></td>
+
+                    <td>
+
+                        <a th:href="@{'/delete/' + ${media.id}}"
+                           class="delete-btn">
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<script>
+
+const dropZone=document.getElementById("dropZone");
+const input=document.getElementById("fileInput");
+const fileNames=document.getElementById("fileNames");
+
+dropZone.addEventListener("click",()=>input.click());
+
+input.addEventListener("change",showFiles);
+
+dropZone.addEventListener("dragover",(e)=>{
+
+    e.preventDefault();
+
+    dropZone.classList.add("drag-over");
+
+});
+
+dropZone.addEventListener("dragleave",()=>{
+
+    dropZone.classList.remove("drag-over");
+
+});
+
+dropZone.addEventListener("drop",(e)=>{
+
+    e.preventDefault();
+
+    dropZone.classList.remove("drag-over");
+
+    input.files=e.dataTransfer.files;
+
+    showFiles();
+
+});
+
+function showFiles(){
+
+    const preview=document.getElementById("previewContainer");
+
+    preview.innerHTML="";
+
+    Array.from(input.files).forEach(file=>{
+
+        const box=document.createElement("div");
+
+        box.className="preview-box";
+
+        if(file.type.startsWith("image")){
+
+            const img=document.createElement("img");
+
+            img.src=URL.createObjectURL(file);
+
+            box.appendChild(img);
+
+        }
+
+        else{
+
+            const video=document.createElement("video");
+
+            video.src=URL.createObjectURL(file);
+
+            video.controls=true;
+
+            box.appendChild(video);
+
+        }
+
+        const name=document.createElement("p");
+
+        name.innerText=file.name;
+
+        box.appendChild(name);
+
+        preview.appendChild(box);
+
+    });
+
+}
+
+</script>
+<script>
+
+document.getElementById("searchMedia").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll("#mediaTable tbody tr");
+
+    rows.forEach(row => {
+
+        row.style.display =
+            row.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+
+    });
+
+});
+
+</script>
 </body>
 
 </html>

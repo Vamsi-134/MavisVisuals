@@ -5,21 +5,25 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.vamsi.portfolio.model.Category;
 import com.vamsi.portfolio.dto.CategoryDTO;
 import com.vamsi.portfolio.dto.MediaDTO;
 import com.vamsi.portfolio.mapper.MediaMapper;
 import com.vamsi.portfolio.model.Media;
 import com.vamsi.portfolio.repository.MediaRepository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 @Service
 public class MediaService {
+	@Autowired
+	private CategoryService categoryService;
 
     @Autowired
     private MediaRepository mediaRepository;
 
     public void saveMedia(Media media) {
 
+        // If user selected cover image
         if (media.isCoverImage()) {
 
             List<Media> mediaList =
@@ -32,6 +36,31 @@ public class MediaService {
                     item.setCoverImage(false);
                     mediaRepository.save(item);
                 }
+            }
+
+        } else {
+
+            // If no cover image exists in this category,
+            // make the first uploaded media the cover automatically.
+
+            List<Media> mediaList =
+                    mediaRepository.findByCategory(media.getCategory());
+
+            boolean coverExists = false;
+
+            for (Media item : mediaList) {
+
+                if (item.isCoverImage()) {
+
+                    coverExists = true;
+                    break;
+                }
+            }
+
+            if (!coverExists) {
+
+                media.setCoverImage(true);
+
             }
         }
 
@@ -51,28 +80,22 @@ public class MediaService {
 
         List<CategoryDTO> categoryList = new ArrayList<>();
 
-        List<String> categories = List.of(
-                "Edited Images",
-                "Edited Videos",
-                "Color Grading",
-                "Thumbnails"
-        );
+        List<Category> categories = categoryService.getAllCategories();
 
-        for (String category : categories) {
+        for (Category categoryObj : categories) {
 
-            // First try to find the cover image
+            String category = categoryObj.getName();
+
             Media media = mediaRepository.findByCoverImageTrue()
                     .stream()
                     .filter(m -> m.getCategory().equals(category))
                     .findFirst()
                     .orElse(null);
 
-            // If no cover image, use the first uploaded image
             if (media == null) {
                 media = mediaRepository.findFirstByCategory(category);
             }
 
-            // Skip category if no media exists
             if (media == null) {
                 continue;
             }
@@ -95,5 +118,17 @@ public class MediaService {
                 .stream()
                 .map(MediaMapper::toDTO)
                 .toList();
+    }
+    public void deleteMedia(Integer id) {
+
+        mediaRepository.deleteById(id);
+
+    }
+    public Page<MediaDTO> getMediaByCategory(String category, int page) {
+
+        return mediaRepository
+                .findByCategory(category, PageRequest.of(page, 9))
+                .map(MediaMapper::toDTO);
+
     }
 }

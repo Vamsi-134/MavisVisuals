@@ -200,39 +200,47 @@
     <div class="gallery-grid">
 
         <div class="gallery-card"
-             th:each="media : ${mediaList}"
-             th:if="${media.coverImage}">
+             th:each="category : ${categoryList}">
 
             <div class="gallery-card-img">
 
                 <img
-                    th:if="${media.type=='Image'}"
-                    th:src="@{'/uploads/images/' + ${media.filename}}"
-                    th:alt="${media.title}" />
+                    th:if="${category.type=='Image'}"
+                    th:src="@{'/uploads/images/' + ${category.coverImage}}"
+                    th:alt="${category.category}" />
 
                 <video
-                    th:if="${media.type=='Video'}"
+                    th:if="${category.type=='Video'}"
                     controls>
-                    <source th:src="@{'/uploads/videos/' + ${media.filename}}" />
+
+                    <source th:src="@{'/uploads/videos/' + ${category.coverImage}}" />
+
                 </video>
 
             </div>
 
             <div class="gallery-card-info">
-                <h3 th:text="${media.category}"></h3>
+
+                <h3 th:text="${category.category}"></h3>
+
                 <p>
-                    Click to view all
-                    <span th:text="${media.category}"></span>
+                    <span th:text="${category.totalItems}"></span>
+                    Items
                 </p>
 
                 <a class="view-btn"
-                   th:href="@{'/gallery/' + ${#strings.replace(media.category,' ','-')}}">
+                   th:href="@{'/gallery/' + ${#strings.replace(category.category,' ','-')} }">
+
                     View Gallery →
+
                 </a>
+
             </div>
+
         </div>
 
     </div>
+
 </section>
 
 <!-- ABOUT -->

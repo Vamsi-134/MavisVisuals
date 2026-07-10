@@ -16,8 +16,8 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
 
-        model.addAttribute("mediaList",
-                mediaService.getAllMedia());
+        model.addAttribute("categoryList",
+                mediaService.getCategoryCards());
 
         return "index";
     }

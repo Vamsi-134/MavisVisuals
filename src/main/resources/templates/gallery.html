@@ -3,11 +3,11 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <title th:text="${category}">Gallery</title>
+<title th:text="${category}">Gallery</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css">
 
 </head>
 
@@ -15,18 +15,13 @@
 
 <nav class="navbar">
 
-    <div class="logo"
-         onclick="window.location.href='/'">
-
+    <div class="logo" onclick="window.location.href='/'">
         MAVIS<span>VISUALS</span>
-
     </div>
 
     <button class="btn-quote"
             onclick="window.location.href='/'">
-
         ← Back Home
-
     </button>
 
 </nav>
@@ -37,37 +32,31 @@
 
         <h1 th:text="${category}"></h1>
 
-        <p>
-
-            Explore my latest creative work.
-
-        </p>
+        <p>Explore my latest creative work.</p>
 
     </div>
 
     <div class="gallery-grid">
 
         <div class="gallery-card"
-
              th:each="media : ${mediaList}">
 
             <div class="gallery-card-img">
 
                 <img
-    th:if="${media.type=='Image'}"
-    th:src="@{'/uploads/images/' + ${media.filename}}"
-    th:alt="${media.title}"
-    onclick="openLightbox(this.src)" />
+                    th:if="${media.type=='Image'}"
+                    th:src="@{'/uploads/images/' + ${media.filename}}"
+                    th:alt="${media.title}"
+                    th:data-title="${media.title}"
+                    th:data-description="${media.description}"
+                    onclick="openLightbox(this)"/>
 
                 <video
-
                     th:if="${media.type=='Video'}"
-
                     controls>
 
                     <source
-
-                        th:src="@{'/uploads/videos/' + ${media.filename}}" />
+                        th:src="@{'/uploads/videos/' + ${media.filename}}"/>
 
                 </video>
 
@@ -86,20 +75,115 @@
     </div>
 
 </section>
-<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img">
+<div class="pagination">
+
+    <a th:if="${currentPage > 0}"
+       th:href="@{'/gallery/' + ${#strings.replace(category,' ','-')} + '?page=' + ${currentPage-1}}">
+        ← Previous
+    </a>
+
+    <span>
+        Page <span th:text="${currentPage+1}"></span>
+        /
+        <span th:text="${totalPages}"></span>
+    </span>
+
+    <a th:if="${currentPage+1 < totalPages}"
+       th:href="@{'/gallery/' + ${#strings.replace(category,' ','-')} + '?page=' + ${currentPage+1}}">
+        Next →
+    </a>
+
+</div>
+
+<!-- LIGHTBOX -->
+
+<div id="lightbox" class="lightbox">
+
+    <span class="close-btn" onclick="closeLightbox()">&times;</span>
+
+    <span class="nav-btn prev-btn" onclick="previousImage()">❮</span>
+
+<img id="lightbox-img">
+
+<span class="nav-btn next-btn" onclick="nextImage()">❯</span>
+
+    <div class="lightbox-info">
+
+        <h2 id="lightbox-title"></h2>
+
+        <p id="lightbox-description"></p>
+
+    </div>
+
 </div>
 
 <script>
-function openLightbox(src){
-    document.getElementById("lightbox").style.display="flex";
-    document.getElementById("lightbox-img").src=src;
+
+let images=[];
+let currentIndex=0;
+
+window.onload=function(){
+
+    images=Array.from(document.querySelectorAll(".gallery-card img"));
+
+};
+
+function openLightbox(img){
+
+
+    document.getElementById("lightbox-img").src = img.src;
+
+    document.getElementById("lightbox-title").innerText = img.dataset.title;
+
+    document.getElementById("lightbox-description").innerText = img.dataset.description;
+
+    document.getElementById("lightbox").style.display = "flex";
+}
+
+function showImage(){
+
+    let img=images[currentIndex];
+
+    document.getElementById("lightbox-img").src=img.src;
+
+    document.getElementById("lightbox-title").innerText=img.dataset.title;
+
+    document.getElementById("lightbox-description").innerText=img.dataset.description;
+}
+
+function previousImage(){
+
+    currentIndex=(currentIndex-1+images.length)%images.length;
+
+    showImage();
+}
+
+function nextImage(){
+
+    currentIndex=(currentIndex+1)%images.length;
+
+    showImage();
 }
 
 function closeLightbox(){
+
     document.getElementById("lightbox").style.display="none";
 }
+
+document.addEventListener("keydown",function(e){
+
+    if(document.getElementById("lightbox").style.display!="flex") return;
+
+    if(e.key==="Escape") closeLightbox();
+
+    if(e.key==="ArrowLeft") previousImage();
+
+    if(e.key==="ArrowRight") nextImage();
+
+});
+
 </script>
+
 </body>
 
 </html>
