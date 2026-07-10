@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title th:text="${category}">Gallery</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo"
+         onclick="window.location.href='/'">
+
+        MAVIS<span>VISUALS</span>
+
+    </div>
+
+    <button class="btn-quote"
+            onclick="window.location.href='/'">
+
+        ← Back Home
+
+    </button>
+
+</nav>
+
+<section class="gallery-page">
+
+    <div class="gallery-header">
+
+        <h1 th:text="${category}"></h1>
+
+        <p>
+
+            Explore my latest creative work.
+
+        </p>
+
+    </div>
+
+    <div class="gallery-grid">
+
+        <div class="gallery-card"
+
+             th:each="media : ${mediaList}">
+
+            <div class="gallery-card-img">
+
+                <img
+    th:if="${media.type=='Image'}"
+    th:src="@{'/uploads/images/' + ${media.filename}}"
+    th:alt="${media.title}"
+    onclick="openLightbox(this.src)" />
+
+                <video
+
+                    th:if="${media.type=='Video'}"
+
+                    controls>
+
+                    <source
+
+                        th:src="@{'/uploads/videos/' + ${media.filename}}" />
+
+                </video>
+
+            </div>
+
+            <div class="gallery-card-info">
+
+                <h3 th:text="${media.title}"></h3>
+
+                <p th:text="${media.description}"></p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img">
+</div>
+
+<script>
+function openLightbox(src){
+    document.getElementById("lightbox").style.display="flex";
+    document.getElementById("lightbox-img").src=src;
+}
+
+function closeLightbox(){
+    document.getElementById("lightbox").style.display="none";
+}
+</script>
+</body>
+
+</html>
