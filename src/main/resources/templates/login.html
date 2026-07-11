@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Login</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#0b1220;
+}
+
+.login-box{
+
+    width:380px;
+    background:#182235;
+    padding:40px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+
+}
+
+h2{
+
+    color:white;
+    text-align:center;
+    margin-bottom:30px;
+
+}
+
+input{
+
+    width:100%;
+    padding:14px;
+    margin-bottom:18px;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+
+}
+
+button{
+
+    width:100%;
+    padding:14px;
+    background:#4f8cff;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+
+}
+
+button:hover{
+
+    background:#2f6df5;
+
+}
+
+.error{
+
+    color:red;
+    margin-bottom:15px;
+    text-align:center;
+
+}
+
+.logout{
+
+    color:lightgreen;
+    margin-bottom:15px;
+    text-align:center;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+<h2>Portfolio Admin Login</h2>
+
+<div th:if="${param.error}" class="error">
+
+Invalid Username or Password
+
+</div>
+
+<div th:if="${param.logout}" class="logout">
+
+Logged out successfully
+
+</div>
+
+<form th:action="@{/login}" method="post">
+
+<input
+type="text"
+name="username"
+placeholder="Username"
+required>
+
+<input
+type="password"
+name="password"
+placeholder="Password"
+required>
+
+<button type="submit">
+
+Login
+
+</button>
+
+</form>
+<hr>
+
+<h3>Forgot Password</h3>
+
+<form action="/forgot-password" method="post">
+
+    <input
+        type="email"
+        name="email"
+        placeholder="Enter your registered email"
+        required>
+
+    <button type="submit">
+        Send Reset Link
+    </button>
+
+</form>
+
+<p style="color:green;" th:text="${message}"></p>
+
+</div>
+
+</body>
+</html>

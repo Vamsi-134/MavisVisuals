@@ -8,6 +8,7 @@
 
 <title>Portfolio Admin</title>
 
+
 <link rel="stylesheet" href="/css/admin.css">
 
 </head>
@@ -17,6 +18,11 @@
 <div class="container">
 
     <h1>Portfolio CMS</h1>
+    <form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit" class="logout-btn">
+        Logout
+    </button>
+</form>
     <div class="dashboard">
 
     <div class="dash-card">
