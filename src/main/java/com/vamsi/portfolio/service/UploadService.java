@@ -1,32 +1,42 @@
 package com.vamsi.portfolio.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 public class UploadService {
 
-    private static final String IMAGE_PATH = "D:/PortfolioUploads/images/";
-    private static final String VIDEO_PATH = "D:/PortfolioUploads/videos/";
+    @Autowired
+    private S3Client s3Client;
 
-    public void saveFile(MultipartFile file, String type) throws IOException {
+    @Value("${AWS_BUCKET_NAME}")
+    private String bucketName;
 
-        String folder = type.equalsIgnoreCase("Image") ? IMAGE_PATH : VIDEO_PATH;
+    public String saveFile(MultipartFile file, String type) throws IOException {
 
-        Path path = Paths.get(folder, file.getOriginalFilename());
+        String folder = type.equalsIgnoreCase("Image")
+                ? "images/"
+                : "videos/";
 
-        Files.createDirectories(path.getParent());
+        String fileName = folder + file.getOriginalFilename();
 
-        file.transferTo(path);
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType(file.getContentType())
+                .build();
 
-        System.out.println("==================================");
-        System.out.println("File Saved Successfully!");
-        System.out.println("Location : " + path.toAbsolutePath());
-        System.out.println("==================================");
+        s3Client.putObject(request,
+                RequestBody.fromBytes(file.getBytes()));
+
+        return fileName;
     }
 }

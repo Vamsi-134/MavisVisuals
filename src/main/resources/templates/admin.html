@@ -17,6 +17,33 @@
 <div class="container">
 
     <h1>Portfolio CMS</h1>
+    <div class="dashboard">
+
+    <div class="dash-card">
+        <h2>📷</h2>
+        <h3 th:text="${dashboard.totalImages}"></h3>
+        <p>Images</p>
+    </div>
+
+    <div class="dash-card">
+        <h2>🎥</h2>
+        <h3 th:text="${dashboard.totalVideos}"></h3>
+        <p>Videos</p>
+    </div>
+
+    <div class="dash-card">
+        <h2>📂</h2>
+        <h3 th:text="${dashboard.totalCategories}"></h3>
+        <p>Categories</p>
+    </div>
+
+    <div class="dash-card">
+        <h2>☁</h2>
+        <h3 th:text="${dashboard.totalMedia}"></h3>
+        <p>Total Media</p>
+    </div>
+
+</div>
 
     <div class="card">
 
@@ -163,6 +190,21 @@ Delete
         placeholder="Search media...">
 
 </div>
+<div class="filter-box">
+
+<select id="categoryFilter">
+
+<option value="">All Categories</option>
+
+<option
+th:each="category:${categoryList}"
+th:value="${category.name}"
+th:text="${category.name}">
+</option>
+
+</select>
+
+</div>
     <div class="card">
 
         <h2>Uploaded Media</h2>
@@ -192,14 +234,19 @@ Delete
 
                     <td>
 
-                        <a th:href="@{'/delete/' + ${media.id}}"
-                           class="delete-btn">
+<a th:href="@{'/edit/' + ${media.id}}"
+   class="edit-btn">
+    ✏ Edit
+</a>
 
-                            Delete
+&nbsp;&nbsp;
 
-                        </a>
+<a th:href="@{'/delete/' + ${media.id}}"
+   class="delete-btn">
+    🗑 Delete
+</a>
 
-                    </td>
+</td>
 
                 </tr>
 
@@ -295,22 +342,32 @@ function showFiles(){
 </script>
 <script>
 
-document.getElementById("searchMedia").addEventListener("keyup", function () {
+const search = document.getElementById("searchMedia");
+const filter = document.getElementById("categoryFilter");
 
-    let value = this.value.toLowerCase();
+search.addEventListener("keyup", filterTable);
+filter.addEventListener("change", filterTable);
 
-    let rows = document.querySelectorAll("#mediaTable tbody tr");
+function filterTable() {
 
-    rows.forEach(row => {
+    let text = search.value.toLowerCase();
+    let category = filter.value.toLowerCase();
 
-        row.style.display =
-            row.innerText.toLowerCase().includes(value)
-            ? ""
-            : "none";
+    document.querySelectorAll("#mediaTable tbody tr").forEach(row => {
+
+        let rowText = row.innerText.toLowerCase();
+
+        let rowCategory = row.children[1].innerText.toLowerCase();
+
+        let show =
+            rowText.includes(text) &&
+            (category === "" || rowCategory === category);
+
+        row.style.display = show ? "" : "none";
 
     });
 
-});
+}
 
 </script>
 </body>

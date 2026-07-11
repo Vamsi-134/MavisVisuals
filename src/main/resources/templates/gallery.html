@@ -44,22 +44,20 @@
             <div class="gallery-card-img">
 
                 <img
-                    th:if="${media.type=='Image'}"
-                    th:src="@{'/uploads/images/' + ${media.filename}}"
-                    th:alt="${media.title}"
-                    th:data-title="${media.title}"
-                    th:data-description="${media.description}"
-                    onclick="openLightbox(this)"/>
+    th:if="${media.type=='Image'}"
+    th:src="${media.imageUrl}"
+    th:alt="${media.title}"
+    th:data-title="${media.title}"
+    th:data-description="${media.description}"
+    onclick="openLightbox(this)"/>
 
                 <video
-                    th:if="${media.type=='Video'}"
-                    controls>
+    th:if="${media.type=='Video'}"
+    controls>
 
-                    <source
-                        th:src="@{'/uploads/videos/' + ${media.filename}}"/>
+    <source th:src="${media.imageUrl}" />
 
-                </video>
-
+</video>
             </div>
 
             <div class="gallery-card-info">

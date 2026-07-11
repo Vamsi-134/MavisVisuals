@@ -20,6 +20,10 @@ public class MediaMapper {
         dto.setFilename(media.getFilename());
         dto.setCoverImage(media.isCoverImage());
 
+        dto.setImageUrl(
+                "https://mavisvisuals-vamsi-storage.s3.ap-south-1.amazonaws.com/"
+                + media.getFilename());
+
         return dto;
     }
 }

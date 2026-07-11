@@ -1,5 +1,5 @@
 package com.vamsi.portfolio.controller;
-
+import com.vamsi.portfolio.service.S3Service;
 import java.io.IOException;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.vamsi.portfolio.service.CategoryService;
 import com.vamsi.portfolio.model.Media;
 import com.vamsi.portfolio.service.MediaService;
-import com.vamsi.portfolio.service.UploadService;
-
+import com.vamsi.portfolio.dto.DashboardDTO;
 @Controller
 public class AdminController {
+	
+	
 
     @Autowired
-    private UploadService uploadService;
+    private S3Service s3Service;
+    
 
     @Autowired
     private MediaService mediaService;
@@ -26,7 +28,18 @@ public class AdminController {
     private CategoryService categoryService;
 
     @GetMapping("/admin")
+    
     public String admin(Model model) {
+    	DashboardDTO dashboard = mediaService.getDashboard();
+
+    	System.out.println("Images = " + dashboard.getTotalImages());
+    	System.out.println("Videos = " + dashboard.getTotalVideos());
+    	System.out.println("Categories = " + dashboard.getTotalCategories());
+    	System.out.println("Media = " + dashboard.getTotalMedia());
+
+    	model.addAttribute("dashboard", dashboard);
+    	
+    	
 
         model.addAttribute("mediaList",
                 mediaService.getAllMedia());
@@ -59,26 +72,26 @@ public class AdminController {
     	System.out.println("======================");
 
         // Save file
-        for (MultipartFile file : files) {
+    	for (MultipartFile file : files) {
 
-            uploadService.saveFile(file, type);
+    	    String fileName = s3Service.uploadFile(file);
 
-            Media media = new Media();
+    	    Media media = new Media();
 
-            media.setTitle(title);
-            media.setDescription(description);
-            media.setCategory(category);
-            media.setType(type);
-            media.setFilename(file.getOriginalFilename());
+    	    media.setTitle(title);
+    	    media.setDescription(description);
+    	    media.setCategory(category);
+    	    media.setType(type);
+    	    media.setFilename(fileName);
 
-            media.setCoverImage(
-                    coverImage != null && file == files[0]
-            );
+    	    media.setCoverImage(
+    	            coverImage != null && file == files[0]);
 
-            mediaService.saveMedia(media);
-        }
+    	    mediaService.saveMedia(media);
+    	}
         return "redirect:/admin";
     }
+    
 
     @GetMapping("/delete/{id}")
     public String deleteMedia(@PathVariable Integer id) {
@@ -86,6 +99,40 @@ public class AdminController {
         mediaService.deleteMedia(id);
 
         return "redirect:/admin";
+    }
+    @GetMapping("/edit/{id}")
+    public String editMedia(
+            @PathVariable Integer id,
+            Model model){
+
+        model.addAttribute(
+                "media",
+                mediaService.getMedia(id));
+
+        return "edit-media";
+    }
+    @PostMapping("/update-media")
+    public String updateMedia(
+
+    @RequestParam Integer id,
+    @RequestParam String title,
+    @RequestParam String description,
+    @RequestParam String category,
+    @RequestParam(required=false)
+    Boolean coverImage){
+
+    Media media=
+    mediaService.getMedia(id);
+
+    media.setTitle(title);
+    media.setDescription(description);
+    media.setCategory(category);
+    media.setCoverImage(coverImage!=null);
+
+    mediaService.saveMedia(media);
+
+    return "redirect:/admin";
+
     }
 
 }

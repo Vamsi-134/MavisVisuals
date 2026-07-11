@@ -1,8 +1,9 @@
 package com.vamsi.portfolio.service;
-
+import java.util.Optional;
+import com.vamsi.portfolio.service.S3Service;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.vamsi.portfolio.dto.DashboardDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.vamsi.portfolio.model.Category;
@@ -17,6 +18,9 @@ import org.springframework.data.domain.PageRequest;
 public class MediaService {
 	@Autowired
 	private CategoryService categoryService;
+	
+	@Autowired
+	private S3Service s3Service;
 
     @Autowired
     private MediaRepository mediaRepository;
@@ -121,7 +125,22 @@ public class MediaService {
     }
     public void deleteMedia(Integer id) {
 
-        mediaRepository.deleteById(id);
+        Optional<Media> mediaOptional = mediaRepository.findById(id);
+
+        if (mediaOptional.isPresent()) {
+
+            Media media = mediaOptional.get();
+
+            // Delete file from S3
+            s3Service.deleteFile(media.getFilename());
+
+            // Delete record from MySQL
+            mediaRepository.delete(media);
+        }
+    }
+    public Media getMedia(Integer id){
+
+        return mediaRepository.findById(id).orElse(null);
 
     }
     public Page<MediaDTO> getMediaByCategory(String category, int page) {
@@ -130,5 +149,23 @@ public class MediaService {
                 .findByCategory(category, PageRequest.of(page, 9))
                 .map(MediaMapper::toDTO);
 
+    }
+    public DashboardDTO getDashboard() {
+
+        DashboardDTO dto = new DashboardDTO();
+
+        dto.setTotalImages(
+                mediaRepository.countByType("Image"));
+
+        dto.setTotalVideos(
+                mediaRepository.countByType("Video"));
+
+        dto.setTotalMedia(
+                mediaRepository.count());
+
+        dto.setTotalCategories(
+                categoryService.getAllCategories().size());
+
+        return dto;
     }
 }

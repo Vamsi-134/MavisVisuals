@@ -9,6 +9,8 @@ public class MediaDTO {
     private String type;
     private String filename;
     private boolean coverImage;
+    private String imageUrl;
+    
 
     public MediaDTO() {
     }
@@ -78,4 +80,12 @@ public class MediaDTO {
     public void setCoverImage(boolean coverImage) {
         this.coverImage = coverImage;
     }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+    
 }
