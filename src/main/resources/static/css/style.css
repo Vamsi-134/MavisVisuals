@@ -1755,3 +1755,10 @@ button,
 min-height:48px;
 
 }
+@media (pointer:coarse){
+
+    #cameraCursor{
+        display:none !important;
+    }
+
+}

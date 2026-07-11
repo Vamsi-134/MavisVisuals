@@ -107,7 +107,10 @@ public class MediaService {
             CategoryDTO dto = new CategoryDTO();
 
             dto.setCategory(category);
-            dto.setCoverImage(media.getFilename());
+            dto.setCoverImage(
+            	    "https://mavisvisuals-vamsi-storage.s3.ap-south-1.amazonaws.com/"
+            	            + media.getFilename()
+            	);
             dto.setType(media.getType());
             dto.setTotalItems(mediaRepository.countByCategory(category));
 

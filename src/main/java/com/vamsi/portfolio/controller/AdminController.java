@@ -72,7 +72,9 @@ public class AdminController {
     	System.out.println("======================");
 
         // Save file
-    	for (MultipartFile file : files) {
+    	for (int i = 0; i < files.length; i++) {
+
+    	    MultipartFile file = files[i];
 
     	    String fileName = s3Service.uploadFile(file);
 
@@ -85,7 +87,7 @@ public class AdminController {
     	    media.setFilename(fileName);
 
     	    media.setCoverImage(
-    	            coverImage != null && file == files[0]);
+    	            coverImage != null && i == 0);
 
     	    mediaService.saveMedia(media);
     	}

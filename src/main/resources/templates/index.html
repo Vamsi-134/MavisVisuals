@@ -231,15 +231,16 @@
             <div class="gallery-card-img">
 
                 <img
-                    th:if="${category.type=='Image'}"
-                    th:src="@{'/uploads/images/' + ${category.coverImage}}"
-                    th:alt="${category.category}" />
+th:if="${category.type=='Image'}"
+th:src="${category.coverImage}"
+th:alt="${category.category}" />
 
                 <video
                     th:if="${category.type=='Video'}"
                     controls>
 
-                    <source th:src="@{'/uploads/videos/' + ${category.coverImage}}" />
+                    <source
+th:src="${category.coverImage}" />
 
                 </video>
 
