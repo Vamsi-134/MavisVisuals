@@ -269,7 +269,13 @@ const dropZone=document.getElementById("dropZone");
 const input=document.getElementById("fileInput");
 const fileNames=document.getElementById("fileNames");
 
-dropZone.addEventListener("click",()=>input.click());
+dropZone.addEventListener("click", (e) => {
+
+    if (e.target.tagName !== "LABEL") {
+        input.click();
+    }
+
+});
 
 input.addEventListener("change",showFiles);
 
