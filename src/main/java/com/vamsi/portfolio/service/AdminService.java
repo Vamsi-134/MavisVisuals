@@ -36,7 +36,7 @@ public class AdminService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("Email not found"));
 
         String token = UUID.randomUUID().toString();
-
+        
         admin.setResetToken(token);
         admin.setTokenExpiry(LocalDateTime.now().plusMinutes(15));
 

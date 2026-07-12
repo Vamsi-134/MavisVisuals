@@ -37,9 +37,10 @@ public class LoginController {
 
         } catch (Exception e) {
 
-            model.addAttribute("message",
-                    "Email not found.");
+            e.printStackTrace();
 
+            model.addAttribute("message",
+                    e.getMessage());
         }
 
         return "login";
