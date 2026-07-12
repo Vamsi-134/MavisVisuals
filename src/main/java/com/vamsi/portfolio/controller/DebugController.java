@@ -15,8 +15,8 @@ public class DebugController {
     @Autowired
     private AdminRepository adminRepository;
 
-    @GetMapping("/debug-admin")
-    public List<Admin> debugAdmin() {
-        return adminRepository.findAll();
+    @GetMapping("/debug-db")
+    public String debugDb() {
+        return adminRepository.count() + " Admin Records";
     }
 }
