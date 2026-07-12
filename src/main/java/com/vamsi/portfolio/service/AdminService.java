@@ -3,11 +3,14 @@ package com.vamsi.portfolio.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,20 @@ public class AdminService implements UserDetailsService {
 
     @Autowired
     private MailService mailService;
+
+    // ===== TEMPORARY PASSWORD GENERATOR =====
+    @PostConstruct
+    public void generatePassword() {
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        System.out.println("=======================================");
+        System.out.println("USERNAME : mavisadmin");
+        System.out.println("PASSWORD : Vamsi@2716");
+        System.out.println("BCrypt Password :");
+        System.out.println(encoder.encode("Vamsi@2716"));
+        System.out.println("=======================================");
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username)
