@@ -37,10 +37,12 @@ public class LoginController {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+           
+        	model.addAttribute("message",
+        	        "Unable to send reset email right now. Please try again later.");
 
-            model.addAttribute("message",
-                    e.getMessage());
+            // Optional: print the actual error in Render logs
+            e.printStackTrace();
         }
 
         return "login";
