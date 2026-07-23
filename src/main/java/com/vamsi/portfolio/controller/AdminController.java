@@ -116,25 +116,36 @@ public class AdminController {
     @PostMapping("/update-media")
     public String updateMedia(
 
-    @RequestParam Integer id,
-    @RequestParam String title,
-    @RequestParam String description,
-    @RequestParam String category,
-    @RequestParam(required=false)
-    Boolean coverImage){
+            @RequestParam Integer id,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam String category,
+            @RequestParam(required = false) Boolean coverImage,
+            @RequestParam(value = "file", required = false) MultipartFile file
 
-    Media media=
-    mediaService.getMedia(id);
+    ) throws IOException {
 
-    media.setTitle(title);
-    media.setDescription(description);
-    media.setCategory(category);
-    media.setCoverImage(coverImage!=null);
+        Media media = mediaService.getMedia(id);
 
-    mediaService.saveMedia(media);
+        media.setTitle(title);
+        media.setDescription(description);
+        media.setCategory(category);
+        media.setCoverImage(coverImage != null);
 
-    return "redirect:/admin";
+        if (file != null && !file.isEmpty()) {
 
+            // Delete old file
+            s3Service.deleteFile(media.getFilename());
+
+            // Upload new file
+            String newFileName = s3Service.uploadFile(file);
+
+            media.setFilename(newFileName);
+        }
+
+        mediaService.saveMedia(media);
+
+        return "redirect:/admin";
     }
 
 }
